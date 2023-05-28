@@ -2543,7 +2543,9 @@ u32 rtw_read_efuse_from_file(const char *path, u8 *buf)
 	u32 ret = _FAIL;
 
 	struct file *fp;
+#ifdef set_fs
 	mm_segment_t fs;
+#endif
 	loff_t pos = 0;
 
 	fp = filp_open(path, O_RDONLY, 0);
@@ -2560,8 +2562,10 @@ u32 rtw_read_efuse_from_file(const char *path, u8 *buf)
 
 	temp[2] = 0; /* add end of string '\0' */
 
+#ifdef set_fs
 	fs = get_fs();
 	set_fs(KERNEL_DS);
+#endif
 
 	for (i = 0 ; i < HWSET_MAX_SIZE ; i++) {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
@@ -2594,7 +2598,9 @@ u32 rtw_read_efuse_from_file(const char *path, u8 *buf)
 		}
 	}
 
+#ifdef set_fs
 	set_fs(fs);
+#endif
 
 	RTW_PRINT("efuse file: %s\n", path);
 #ifdef CONFIG_RTW_DEBUG
@@ -2619,7 +2625,9 @@ exit:
 u32 rtw_read_macaddr_from_file(const char *path, u8 *buf)
 {
 	struct file *fp;
+#ifdef set_fs
 	mm_segment_t fs;
+#endif
 	loff_t pos = 0;
 
 	u8 source_addr[18];
@@ -2641,8 +2649,10 @@ u32 rtw_read_macaddr_from_file(const char *path, u8 *buf)
 		goto exit;
 	}
 
+#ifdef set_fs
 	fs = get_fs();
 	set_fs(KERNEL_DS);
+#endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
 	kernel_read(fp, source_addr, 18, &pos);
@@ -2671,7 +2681,9 @@ u32 rtw_read_macaddr_from_file(const char *path, u8 *buf)
 		}
 	}
 
+#ifdef set_fs
 	set_fs(fs);
+#endif
 
 	RTW_PRINT("wifi_mac file: %s\n", path);
 #ifdef CONFIG_RTW_DEBUG
